@@ -1,30 +1,36 @@
 ﻿@page "/"
-
+@rendermode InteractiveServer
 @using FileUploadForm.Abstractions
 @using FileUploadForm.Models
 
 @inject IBlobStorageService BlobStorageService
 
 <PageTitle>File Upload</PageTitle>
-<form method="POST" @onsubmit="(e) => UploadFile((InputFileChangeEventArgs)e)">
-    <InputFile />
-    <button type="submit"> Upload</button>
-</form>
+
+    <InputText @bind-Value="Email"/>
+    <InputFile OnChange="OnSelectedFile"  single/>
+    <button type="submit" @onclick="UploadFile"> Upload</button>
 
 @if(response != null)
 {
     <p>@response.Status</p>
-}else
-{
-    <p>No file uploaded</p>
 }
 
 @code 
 {
     ResponseDTO response;
+    string Email;
+    IBrowserFile attachment;
+    string status;
 
-    private async void UploadFile(InputFileChangeEventArgs e)
+    private async void OnSelectedFile(InputFileChangeEventArgs e)
     {
-       response = await BlobStorageService.Upload(e.File);
+        status = e.File.Name;
+        attachment = e.File;
+    }
+
+    private async Task UploadFile()
+    {
+       response = await BlobStorageService.Upload(attachment);
     }
 }

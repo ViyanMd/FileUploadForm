@@ -9,7 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
 
 var app = builder.Build();
 
