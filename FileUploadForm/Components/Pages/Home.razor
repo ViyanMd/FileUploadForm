@@ -2,35 +2,70 @@
 @rendermode InteractiveServer
 @using FileUploadForm.Abstractions
 @using FileUploadForm.Models
+@using System.ComponentModel.DataAnnotations
 
 @inject IBlobStorageService BlobStorageService
 
 <PageTitle>File Upload</PageTitle>
 
-    <InputText @bind-Value="Email"/>
-    <InputFile OnChange="OnSelectedFile"  single/>
-    <button type="submit" @onclick="UploadFile"> Upload</button>
+<EditForm EditContext="@editContext" OnSubmit="UploadFile">
+
+    <DataAnnotationsValidator />
+
+    <p>
+        Select File:<br />
+        <InputFile id="client_file" OnChange="OnSelectedFile" />
+    </p>
+    <p>
+        Email:<br />
+        <InputText id="client_email" @bind-Value="formModel.Email" />
+    </p>
+    <button type="submit">Submit</button>
+    <p>
+
+
+        @if(isLoading)
+        {
+            <span>Loading...</span>
+        }else
+        {
+            <span>@response?.Status</span>
+        }
+    </p>
+    <ValidationSummary />
+
+</EditForm>
 
 @if(response != null)
 {
-    <p>@response.Status</p>
+    <p>@response.Blob.ContentType</p>
 }
 
 @code 
 {
-    ResponseDTO response;
-    string Email;
-    IBrowserFile attachment;
-    string status;
+    EditContext? editContext;
+    FormModel formModel = new();
 
-    private async void OnSelectedFile(InputFileChangeEventArgs e)
+    ResponseDTO? response;
+
+    bool isLoading;
+
+    protected override void OnInitialized()
     {
-        status = e.File.Name;
-        attachment = e.File;
+        editContext = new(formModel);
+    }
+
+    private void OnSelectedFile(InputFileChangeEventArgs e)
+    {
+        formModel.File = e.File;
     }
 
     private async Task UploadFile()
     {
-       response = await BlobStorageService.Upload(attachment);
+        isLoading = true;
+        if (editContext != null && editContext.Validate())
+            response = await BlobStorageService.Upload(formModel.File);
+
+        isLoading = false;
     }
 }
