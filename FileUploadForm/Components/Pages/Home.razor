@@ -58,6 +58,7 @@
     private void OnSelectedFile(InputFileChangeEventArgs e)
     {
         formModel.File = e.File;
+        formModel.Name = e.File.Name;
     }
 
     private async Task UploadFile()
