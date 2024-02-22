@@ -5,6 +5,6 @@ namespace FileUploadForm.Abstractions
 {
     public interface IBlobStorageService
     {
-        Task<ResponseDTO> Upload(IBrowserFile blob);
+        Task<ResponseDTO> Upload(IBrowserFile blob, string email);
     }
 }

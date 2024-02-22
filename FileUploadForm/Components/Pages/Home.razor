@@ -1,5 +1,6 @@
 ﻿@page "/"
 @rendermode InteractiveServer
+
 @using FileUploadForm.Abstractions
 @using FileUploadForm.Models
 @using System.ComponentModel.DataAnnotations
@@ -8,38 +9,37 @@
 
 <PageTitle>File Upload</PageTitle>
 
-<EditForm EditContext="@editContext" OnSubmit="UploadFile">
+<EditForm id="form_container" class="flex-column" EditContext="@editContext" OnSubmit="UploadFile">
 
     <DataAnnotationsValidator />
 
-    <p>
-        Select File:<br />
+    <div class="input_container flex-column" >
+        <span class="label">Select Document:</span>
         <InputFile id="client_file" OnChange="OnSelectedFile" />
-    </p>
-    <p>
-        Email:<br />
+    </div>
+    <div class="input_container flex-column">
+        <span class="label">Email: </span>
         <InputText id="client_email" @bind-Value="formModel.Email" />
-    </p>
-    <button type="submit">Submit</button>
-    <p>
-
-
+    </div>
+    <button id ="bt_submit" type="submit">Submit</button>
         @if(isLoading)
         {
-            <span>Loading...</span>
-        }else
-        {
-            <span>@response?.Status</span>
+            <span id="loading_status"><i>Loading...</i></span>
         }
-    </p>
+        @if(!String.IsNullOrEmpty(response?.Status))
+        {
+            @if(response.Error == true)
+            {
+                <span id="error" class="response_status">@response.Status</span>
+            }
+            else
+            {
+                <span id="success" class="response_status">@response.Status</span>
+            }
+        }
     <ValidationSummary />
 
 </EditForm>
-
-@if(response != null)
-{
-    <p>@response.Blob.ContentType</p>
-}
 
 @code 
 {
@@ -65,7 +65,7 @@
     {
         isLoading = true;
         if (editContext != null && editContext.Validate())
-            response = await BlobStorageService.Upload(formModel.File);
+            response = await BlobStorageService.Upload(formModel.File, formModel.Email);
 
         isLoading = false;
     }

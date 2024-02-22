@@ -10,6 +10,7 @@
     <ProjectReference Include="..\FileUploadForm.Client\FileUploadForm.Client.csproj" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="5.2.2" />
   </ItemGroup>
 
 </Project>
